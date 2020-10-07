@@ -2,7 +2,7 @@ package Personnage;
 
 import java.util.List;
 
-public abstract class Personnage {
+public abstract class Personnage extends Entity{
 	private String name;
 	private int pointAction;
 	private List<String> messages;
