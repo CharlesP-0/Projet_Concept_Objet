@@ -6,6 +6,7 @@ public class Colonne {
 
 	public Colonne(int cases) {
 		this.nbCases = cases;
+		this.cases = new Case[nbCases];
 		for (int i = 0; i < nbCases; i++) {
 			this.cases[i] = new Case();
 		}
