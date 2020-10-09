@@ -10,8 +10,9 @@ public class Carte {
 	private Colonne[] carte;
 	private int nbColonne;
 	private int nbLigne;
-	//Penser à ajouter le plugin https://marketplace.eclipse.org/content/ansi-escape-console#group-detailsgithub.com/fusesource/jansi
-	//Sinon les couleurs ne s'afficheront pas pour les prints
+	// Penser à ajouter le plugin
+	// https://marketplace.eclipse.org/content/ansi-escape-console#group-detailsgithub.com/fusesource/jansi
+	// Sinon les couleurs ne s'afficheront pas pour les prints
 	private String red = "\033[31m";
 	private String blue = "\033[34m";
 	private String green = "\033[32m";
@@ -29,8 +30,18 @@ public class Carte {
 		System.out.println("La carte a bien été créée");
 	}
 
+	/**
+	 * Set specifics cases as a safezone.
+	 * 
+	 * @param departX The x coordinate of the first case top be set as a safezone.
+	 * @param departY The y coordinate of the first case top be set as a safezone.
+	 * @param finX    The x coordinate of the last case top be set as a safezone.
+	 * @param finY    The y coordinate of the last case top be set as a safezone.
+	 * @param ville   The city that the safezone is associated with.
+	 */
 	public void setCaseAsSafeZone(int departX, int departY, int finX, int finY, SafeZone ville) {
 		if (departX > finX || departY > finY) {
+			// Make sure that the coordinates are relevant
 			System.out
 					.println("Impossible d'instancier une safezone, veillez à ce que departX > finX et departY > finY");
 		} else {
@@ -46,22 +57,44 @@ public class Carte {
 		}
 	}
 
+	/**
+	 * Set a specific case to be occupied.
+	 * 
+	 * @param x      The X coordinate of the case that must be set as occupied.
+	 * @param y      The Y coordinate of the case that must be set as occupied.
+	 * @param entity The entity that occupies the specified case.
+	 */
 	public void setOccupation(int x, int y, Entity entity) {
 		this.carte[x].getCases()[y].setOccupied(true);
 		this.carte[x].getCases()[y].setIsOccupiedBy(entity);
 		System.out.println(String.format("Entity " + entity + " as been set at [%d,%d]", x, y));
 	}
 
-	public void isOccupied(int x, int y) {
+	/**
+	 * Check if the case of given coordinates is occupied.
+	 * 
+	 * @param x The X coordinate of the case that must be checked.
+	 * @param y The Y coordinate of the case that must be checked.
+	 * @return Return true if the case is occupied and false if not.
+	 */
+	public boolean isOccupied(int x, int y) {
 		boolean occupied = this.carte[x].getCases()[y].isOccupied();
 		if (occupied) {
 			System.out.println(String.format("La case [%d,%d] est occupée", x, y));
 		} else {
 			System.out.println(String.format("La case [%d,%d] n'est pas occupée", x, y));
 		}
+		return occupied;
 	}
 
-	public void isASafeZone(int x, int y) {
+	/**
+	 * Check if a specific case is a safezone.
+	 * 
+	 * @param x The X coordinate of the case that must be checked.
+	 * @param y The Y coordinate of the case that must be checked.
+	 * @return Return true if the case is a safezone and false if not.
+	 */
+	public boolean isASafeZone(int x, int y) {
 		boolean isASafezone = this.carte[x].getCases()[y].isASafeZone();
 		if (isASafezone) {
 			SafeZone safezone = this.carte[x].getCases()[y].getSafeZone();
@@ -69,8 +102,13 @@ public class Carte {
 		} else {
 			System.out.println(String.format("La case [%d,%d] n'est pas une safezone", x, y));
 		}
+		return isASafezone;
 	}
 
+	/**
+	 * Function to display the map
+	 * 
+	 */
 	public void displayMap() {
 		for (int i = 0; i < this.nbLigne; i++) {
 			for (int j = 0; j < this.nbColonne; j++) {
@@ -78,23 +116,23 @@ public class Carte {
 					if (this.carte[j].getCases()[i].getSafeZone() == SafeZone.EPERVINE) {
 						System.out.print(red + " E" + black);
 					} else if (this.carte[j].getCases()[i].getSafeZone() == SafeZone.MARKATH) {
-						System.out.print(green +" M"+ black);
+						System.out.print(green + " M" + black);
 					} else if (this.carte[j].getCases()[i].getSafeZone() == SafeZone.FORTDHIVER) {
-						System.out.print(blue+" F"+black);
+						System.out.print(blue + " F" + black);
 					} else if (this.carte[j].getCases()[i].getSafeZone() == SafeZone.SOLITUDE) {
-						System.out.print(purple+" S"+black);
+						System.out.print(purple + " S" + black);
 					}
 				} else if (this.carte[j].getCases()[i].isOccupied()) {
 					if (this.carte[j].getCases()[i].getIsOccupiedBy().getClass() == Khajit.class) {
-						System.out.print(blue+" K"+black);
+						System.out.print(blue + " K" + black);
 					} else if (this.carte[j].getCases()[i].getIsOccupiedBy().getClass() == EfleNoir.class) {
-						System.out.print(purple+" N"+black);
+						System.out.print(purple + " N" + black);
 					} else if (this.carte[j].getCases()[i].getIsOccupiedBy().getClass() == Nordique.class) {
-						System.out.print(green+" N"+black);
+						System.out.print(green + " N" + black);
 					} else if (this.carte[j].getCases()[i].getIsOccupiedBy().getClass() == Orcs.class) {
-						System.out.print(red+" O"+black);
+						System.out.print(red + " O" + black);
 					} else {
-						System.out.print(yellow+" X"+black);
+						System.out.print(yellow + " X" + black);
 					}
 				} else {
 					System.out.print(" .");
