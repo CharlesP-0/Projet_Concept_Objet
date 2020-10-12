@@ -45,7 +45,7 @@ public abstract class Personnage extends Entity{
 	}
 	
 	public Message giveMsg() {
-		Random gen = new Random(this.messages.length);
+		Random gen = new Random();
 		return this.messages[gen.nextInt(this.messages.length)];
 	}
 

@@ -144,4 +144,22 @@ public class Carte {
 			System.out.println();
 		}
 	}
+
+	public int nbOccupiedNeighboor(int x, int y) {
+		int nbOccupied = 0;
+		int[] list = new int[3];
+		list[0] = -1;
+		list[1] = 0;
+		list[2] = 1;
+		for (int i : list) {
+			for (int j : list) {
+				if (x + i < nbColonne && x + i >= 0 && y + j < nbLigne && y + j >= 0) {
+					if (this.isOccupied(x + i, y + j) && (i != 0 && j != 0)) {
+						nbOccupied++;
+					}
+				}
+			}
+		}
+		return nbOccupied;
+	}
 }
