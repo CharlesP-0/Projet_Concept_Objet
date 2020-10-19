@@ -1,5 +1,6 @@
 package Main;
 
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -7,6 +8,7 @@ import Carte.Carte;
 import Carte.SafeZone;
 import Personnage.Khajit;
 import Personnage.MaitreOrc;
+import Personnage.Nordique;
 import Personnage.Obstacle;
 
 public class Simulation {
@@ -20,11 +22,18 @@ public class Simulation {
 		Obstacle[] listObstacles = null;
 		Carte carte = new Carte(20, 20);
 		Khajit test = new Khajit();
-		carte.setCaseAsSafeZone(0, 0, 5, 5, SafeZone.EPERVINE);
+		Nordique test2 = new Nordique();
+		carte.setCaseAsSafeZone(0, 0, 4, 4, SafeZone.EPERVINE);
 		// TimeUnit.SECONDS.sleep(1);
-		carte.setOccupation(5, 7, test);
+		carte.setOccupation(5, 3, test);
+		test.setPositionX(5);
+		test.setPositionY(3);
+		carte.setOccupation(15, 7, test2);
+		test2.setPositionX(15);
+		test2.setPositionY(7);
 		// TimeUnit.SECONDS.sleep(1);
 		carte.isOccupied(5, 3);
+		carte.isOccupied(15, 13);
 		// TimeUnit.SECONDS.sleep(1);
 		carte.isOccupied(13, 3);
 		// TimeUnit.SECONDS.sleep(1);
@@ -33,6 +42,14 @@ public class Simulation {
 		carte.isASafeZone(7, 12);
 		// TimeUnit.SECONDS.sleep(1);
 		generateObstacle(quantity, carte, listObstacles);
+		test.setTarget(carte);
+		List<String> directions = test.pathFinding(test.getTarget(), carte);
+		System.out.println(test.getTarget().getPositionX());
+		System.out.println("Path finding size : " + directions.size());
+		for (int i = 0; i<directions.size(); i++) {
+			System.out.println(directions.get(i));
+		}
+		
 		carte.displayMap();
 	}
 

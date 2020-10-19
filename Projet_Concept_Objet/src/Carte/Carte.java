@@ -1,6 +1,6 @@
 package Carte;
 
-import Personnage.EfleNoir;
+import Personnage.ElfeNoir;
 import Personnage.Entity;
 import Personnage.Khajit;
 import Personnage.Nordique;
@@ -19,6 +19,22 @@ public class Carte {
 	private String yellow = "\033[33m";
 	private String purple = "\033[35m";
 	private String black = "\u001B[0m";
+
+	public int getNbColonne() {
+		return nbColonne;
+	}
+
+	public void setNbColonne(int nbColonne) {
+		this.nbColonne = nbColonne;
+	}
+
+	public int getNbLigne() {
+		return nbLigne;
+	}
+
+	public void setNbLigne(int nbLigne) {
+		this.nbLigne = nbLigne;
+	}
 
 	public Carte(int ligne, int colonne) {
 		this.nbColonne = colonne;
@@ -70,6 +86,14 @@ public class Carte {
 		System.out.println(String.format("Entity " + entity + " as been set at [%d,%d]", x, y));
 	}
 
+	public Entity getOccupation(int x, int y) {
+		if (this.carte[x].getCases()[y].isOccupied()) {
+			return this.carte[x].getCases()[y].getIsOccupiedBy();
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * Check if the case of given coordinates is occupied.
 	 * 
@@ -80,9 +104,9 @@ public class Carte {
 	public boolean isOccupied(int x, int y) {
 		boolean occupied = this.carte[x].getCases()[y].isOccupied();
 		if (occupied) {
-			System.out.println(String.format("La case [%d,%d] est occupée", x, y));
+			//System.out.println(String.format("La case [%d,%d] est occupée", x, y));
 		} else {
-			System.out.println(String.format("La case [%d,%d] n'est pas occupée", x, y));
+			//System.out.println(String.format("La case [%d,%d] n'est pas occupée", x, y));
 		}
 		return occupied;
 	}
@@ -125,7 +149,7 @@ public class Carte {
 				} else if (this.carte[j].getCases()[i].isOccupied()) {
 					if (this.carte[j].getCases()[i].getIsOccupiedBy().getClass() == Khajit.class) {
 						System.out.print(blue + " K" + black);
-					} else if (this.carte[j].getCases()[i].getIsOccupiedBy().getClass() == EfleNoir.class) {
+					} else if (this.carte[j].getCases()[i].getIsOccupiedBy().getClass() == ElfeNoir.class) {
 						System.out.print(purple + " N" + black);
 					} else if (this.carte[j].getCases()[i].getIsOccupiedBy().getClass() == Nordique.class) {
 						System.out.print(green + " N" + black);
