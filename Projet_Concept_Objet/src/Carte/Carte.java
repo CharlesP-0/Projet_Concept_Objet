@@ -93,6 +93,10 @@ public class Carte {
 			return null;
 		}
 	}
+	public void freeOccupation (int x, int y) {
+		this.carte[x].getCases()[y].setOccupied(false);
+		this.carte[x].getCases()[y].setIsOccupiedBy(null);
+	}
 
 	/**
 	 * Check if the case of given coordinates is occupied.

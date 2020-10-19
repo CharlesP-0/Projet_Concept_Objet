@@ -20,41 +20,23 @@ public abstract class Personnage extends Entity {
 	private int positionY;
 	private Personnage target;
 	private Personnage previousTarget;
+	private int maxMovement;
 
 	public Personnage() {
-	}
-
-	public void move() {
-	}
-
-	public void meet(Personnage personnage) {
-		// confrontation between the two
-		boolean sameAlliance = this.alliance == personnage.getAlliance();
-		if (sameAlliance) {
-			this.takeMsgFrom(personnage, sameAlliance);
-			personnage.takeMsgFrom(this, sameAlliance);
-		} else {
-			if (this.pointAction > personnage.getPointAction()) {
-				this.takeMsgFrom(personnage, sameAlliance);
-			} else {
-				personnage.takeMsgFrom(this, sameAlliance);
-			}
-		}
-	}
-
-	public void takeMsgFrom(Personnage peronnage, boolean sameAlliance) {
-		Message messageReceived = giveMsg();
-		this.messagesReceived.add(messageReceived);
-
-	}
-
-	public Message giveMsg() {
-		Random gen = new Random();
-		return this.messages[gen.nextInt(this.messages.length)];
+		this.maxMovement = 15;
 	}
 
 	public String getName() {
 		return name;
+	}
+	
+
+	public int getMaxMovement() {
+		return maxMovement;
+	}
+
+	public void setMaxMovement(int maxMovement) {
+		this.maxMovement = maxMovement;
 	}
 
 	public void setName(String name) {
@@ -129,6 +111,66 @@ public abstract class Personnage extends Entity {
 		return target;
 	}
 
+	public Personnage getPreviousTarget() {
+		return previousTarget;
+	}
+
+	public void setPreviousTarget(Personnage previousTarget) {
+		this.previousTarget = previousTarget;
+	}
+
+	public void move(List<String> directions, Carte carte) throws InterruptedException {
+		int x;
+		int y;
+		for (String direction : directions) {
+			x = directionToIndexX(this.positionX, direction);
+			y = directionToIndexY(this.positionY, direction);
+			if (carte.isOccupied(x, y)) {
+				if (carte.getOccupation(x, y).getClass() != this.getClass()
+						&& (carte.getOccupation(x, y) instanceof Personnage)) {
+					// this.meet((Personnage) carte.getOccupation(x, y), carte);
+					System.out.println("Meet");
+					break;
+				}
+			} else {
+				carte.freeOccupation(this.positionX, this.positionY);
+				carte.setOccupation(x, y, this);
+				this.positionX = x;
+				this.positionY = y;
+				carte.displayMap();
+				TimeUnit.SECONDS.sleep(1);
+			}
+		}
+	}
+
+	public void meet(Personnage personnage, Carte carte) {
+		// confrontation between the two
+		boolean sameAlliance = this.alliance == personnage.getAlliance();
+		if (sameAlliance) {
+			this.takeMsgFrom(personnage, sameAlliance);
+			personnage.takeMsgFrom(this, sameAlliance);
+		} else {
+			if (this.pointAction > personnage.getPointAction()) {
+				this.takeMsgFrom(personnage, sameAlliance);
+			} else {
+				personnage.takeMsgFrom(this, sameAlliance);
+			}
+			this.setTarget(carte);
+			personnage.setPreviousTarget(this);
+		}
+	}
+
+	public void takeMsgFrom(Personnage peronnage, boolean sameAlliance) {
+		Message messageReceived = giveMsg();
+		this.messagesReceived.add(messageReceived);
+
+	}
+
+	public Message giveMsg() {
+		Random gen = new Random();
+		return this.messages[gen.nextInt(this.messages.length)];
+	}
+
 	public void setTarget(Carte carte) {
 		float distance = (carte.getNbColonne() * carte.getNbLigne()) + 1;
 		this.previousTarget = this.target;
@@ -137,6 +179,11 @@ public abstract class Personnage extends Entity {
 				if (carte.isOccupied(i, j) && carte.getOccupation(i, j).getClass() != this.getClass()
 						&& (carte.getOccupation(i, j) instanceof Personnage)
 						&& carte.getOccupation(i, j) != previousTarget) {
+					/*
+					 * On vérifie que l'entité qui occupe la case n'est pas un personnage de la même
+					 * race (et par la même occasion, qu'il ne se prenne pas lui-même pour cible) ou
+					 * un personnage qu'il a déjà rencontré précédemment
+					 */
 					if (distance(this.positionX, this.positionY, i, j) < distance) {
 						this.target = (Personnage) carte.getOccupation(i, j);
 					}
@@ -146,7 +193,8 @@ public abstract class Personnage extends Entity {
 	}
 
 	/**
-	 * Method to determine the path to follow to go to another character. The path may not be the most optimized path
+	 * Method to determine the path to follow to go to another character. The path
+	 * may not be the most optimized path
 	 * 
 	 * @param target The character that we want to go to
 	 * @param carte  The map that the character will move through
@@ -154,7 +202,7 @@ public abstract class Personnage extends Entity {
 	 *         the target
 	 * @throws InterruptedException
 	 */
-	public List<String> pathFinding(Personnage target, Carte carte) throws InterruptedException {
+	public List<String> pathFinding(Personnage target, Carte carte, int maxMovement){
 		List<String> directions = new ArrayList<String>();
 		int targetX = target.getPositionX();
 		int targetY = target.getPositionY();
@@ -162,15 +210,11 @@ public abstract class Personnage extends Entity {
 		int currentY = this.getPositionY();
 		int testX = currentX;
 		int testY = currentY;
-		System.out.println("Je suis à testX : " + testX);
-		System.out.println("Je suis à testY : " + testY);
 		if (currentX != targetX || currentY != targetY) {
 			directions.add(path(currentX, currentY, targetX, targetY, carte));
-			for (int i = 0; i < 9; i++) {
+			for (int i = 0; i < maxMovement; i++) {
 				testX = directionToIndexX(testX, directions.get(i));
-				System.out.println("TestX : " + testX);
 				testY = directionToIndexY(testY, directions.get(i));
-				System.out.println("TestY : " + testY);
 				directions.add(path(testX, testY, targetX, targetY, carte));
 				if (testX == targetX && testY == targetY) {
 					break;
@@ -194,7 +238,6 @@ public abstract class Personnage extends Entity {
 	 */
 	public String path(int currentX, int currentY, int targetX, int targetY, Carte carte) {
 		int min = (carte.getNbColonne() * carte.getNbLigne()) + 1;
-		System.out.println("min : " + min);
 		int distance;
 		int coordoneeX = 0;
 		int coordoneeY = 0;
@@ -209,30 +252,19 @@ public abstract class Personnage extends Entity {
 						continue;
 					} else if (i != 0 || j != 0) {
 						distance = distance(currentX + i, currentY + j, targetX, targetY);
-						System.out.println("Distance : " + distance);
-						System.out.println("Path i : " + i);
-						System.out.println("path j : " + j);
-						System.out.println(distance < min);
 						if (distance < min) {
+							// Dans le cas où on a une distance égale, il est possible que l'une des
+							// propostions conduise vers un chemin plus court.
+							// On pourrait vérifier le chemin plus court en testant la distance restante du
+							// déplacement suivant pour chacunes des propositions.
 							min = distance;
-							System.out.println("Min boucle : " + min);
-							System.out.println(min);
 							coordoneeX = i;
 							coordoneeY = j;
-							System.out.println();
-							System.out.println("X : " + coordoneeX);
-							System.out.println("Y : " + coordoneeY);
 						}
 					}
 				}
 			}
 		}
-		System.out.println();
-		System.out.println("i : " + coordoneeX);
-		System.out.println("j : " + coordoneeY);
-		System.out.println("CurrentX + i " + (currentX + coordoneeX));
-		System.out.println("CurrentY + j " + (currentY + coordoneeY));
-		System.out.println(chooseDirection(coordoneeX, coordoneeY));
 		return chooseDirection(coordoneeX, coordoneeY);
 	}
 

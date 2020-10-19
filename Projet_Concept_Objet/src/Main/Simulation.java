@@ -43,13 +43,15 @@ public class Simulation {
 		// TimeUnit.SECONDS.sleep(1);
 		generateObstacle(quantity, carte, listObstacles);
 		test.setTarget(carte);
-		List<String> directions = test.pathFinding(test.getTarget(), carte);
+		List<String> directions = test.pathFinding(test.getTarget(), carte, test.getMaxMovement());
 		System.out.println(test.getTarget().getPositionX());
 		System.out.println("Path finding size : " + directions.size());
 		for (int i = 0; i<directions.size(); i++) {
 			System.out.println(directions.get(i));
 		}
 		
+		carte.displayMap();
+		test.move(directions, carte);
 		carte.displayMap();
 	}
 
