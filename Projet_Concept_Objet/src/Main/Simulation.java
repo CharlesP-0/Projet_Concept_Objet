@@ -23,14 +23,14 @@ public class Simulation {
 		Carte carte = new Carte(20, 20);
 		Khajit test = new Khajit();
 		Nordique test2 = new Nordique();
-		carte.setCaseAsSafeZone(0, 0, 4, 4, SafeZone.EPERVINE);
+		carte.setCaseAsSafeZone(0, 0, 4, 4, SafeZone.FORTDHIVER);
 		// TimeUnit.SECONDS.sleep(1);
 		carte.setOccupation(5, 3, test);
 		test.setPositionX(5);
 		test.setPositionY(3);
-		carte.setOccupation(15, 7, test2);
-		test2.setPositionX(15);
-		test2.setPositionY(7);
+		carte.setOccupation(3, 3, test2);
+		test2.setPositionX(3);
+		test2.setPositionY(3);
 		// TimeUnit.SECONDS.sleep(1);
 		carte.isOccupied(5, 3);
 		carte.isOccupied(15, 13);

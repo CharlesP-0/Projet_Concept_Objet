@@ -6,10 +6,12 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import Carte.Carte;
+import Carte.SafeZone;
 import Message.Message;
 
 public abstract class Personnage extends Entity {
 	private String name;
+	private SafeZone safezone;
 	private int pointAction;
 	private Message[] messages;
 	private List<Message> messagesReceived;
@@ -29,7 +31,14 @@ public abstract class Personnage extends Entity {
 	public String getName() {
 		return name;
 	}
-	
+
+	public SafeZone getSafezone() {
+		return safezone;
+	}
+
+	public void setSafezone(SafeZone safezone) {
+		this.safezone = safezone;
+	}
 
 	public int getMaxMovement() {
 		return maxMovement;
@@ -137,6 +146,7 @@ public abstract class Personnage extends Entity {
 				carte.setOccupation(x, y, this);
 				this.positionX = x;
 				this.positionY = y;
+				this.lastDirection = direction;
 				carte.displayMap();
 				TimeUnit.SECONDS.sleep(1);
 			}
@@ -202,7 +212,7 @@ public abstract class Personnage extends Entity {
 	 *         the target
 	 * @throws InterruptedException
 	 */
-	public List<String> pathFinding(Personnage target, Carte carte, int maxMovement){
+	public List<String> pathFinding(Personnage target, Carte carte, int maxMovement) {
 		List<String> directions = new ArrayList<String>();
 		int targetX = target.getPositionX();
 		int targetY = target.getPositionY();
@@ -244,7 +254,8 @@ public abstract class Personnage extends Entity {
 		for (int i = -1; i < 2; i++) {
 			for (int j = -1; j < 2; j++) {
 				if (currentX + i < 0 || currentX + i > (carte.getNbColonne() - 1) || currentY + j < 0
-						|| currentY + j > (carte.getNbLigne() - 1)) {
+						|| currentY + j > (carte.getNbLigne() - 1) || (carte.isASafeZone(currentX + i, currentY + j)
+								&& carte.getSafeZone(currentX + i, currentY + j) != this.getSafezone())) {
 					continue;
 				} else {
 					if ((carte.isOccupied(currentX + i, currentY + j)
@@ -257,9 +268,18 @@ public abstract class Personnage extends Entity {
 							// propostions conduise vers un chemin plus court.
 							// On pourrait vérifier le chemin plus court en testant la distance restante du
 							// déplacement suivant pour chacunes des propositions.
+							//La partie mise en commentaire est une tentative de résolution de ce problème.
 							min = distance;
 							coordoneeX = i;
 							coordoneeY = j;
+						/*} else if (distance == min) {
+							int distance1 = distanceNext(currentX+coordoneeX, currentY+coordoneeY, targetX, targetY, carte)[0];
+							int distance2 = distanceNext(currentX+i, currentY+j, targetX, targetY, carte)[0];
+							if (distance2<distance1) {
+								min = distance2;
+								coordoneeX = i;
+								coordoneeY = j;
+							}*/
 						}
 					}
 				}
@@ -267,6 +287,40 @@ public abstract class Personnage extends Entity {
 		}
 		return chooseDirection(coordoneeX, coordoneeY);
 	}
+
+	/*public int[] distanceNext(int x, int y, int targetX, int targetY, Carte carte) {
+		int distance;
+		int min = 999;
+		int coordonneesX = 0;
+		int coordonneesY = 0;
+		for (int i = -1; i < 2; i++) {
+			for (int j = -1; j < 2; j++) {
+				if (x + i < 0 || x + i > (carte.getNbColonne() - 1) || y + j < 0 || y + j > (carte.getNbLigne() - 1)
+						|| (carte.isASafeZone(x + i, y + j) && carte.getSafeZone(x + i, y + j) != this.getSafezone())) {
+					continue;
+					} else if (i != 0 || j != 0) {
+						distance = distance(x + i, y + j, targetX, targetY);
+						if (distance < min) {
+							min = distance;
+							coordonneesX = x+i;
+							coordonneesY = y+j;
+						} else if (distance == min) {
+							int[] test1 = distanceNext(coordonneesX, coordonneesY, targetX, targetY, carte);
+							int[] test2 = distanceNext(x+i, y+j, targetX, targetY, carte);
+							int distance1 = test1[0];
+							int distance2 = test2[0];
+							if(distance1 > distance2) {
+								min = distance2;
+								coordonneesX = x+i;
+								coordonneesY = y+j;
+							}
+						}
+					}
+				}
+		}
+		int[] results = new int[] {min, coordonneesX, coordonneesY};
+		return results;
+	}*/
 
 	/**
 	 * Method to calculate the distance between two characters
@@ -278,7 +332,7 @@ public abstract class Personnage extends Entity {
 	 * @return The distance between the two characters
 	 */
 	public int distance(int currentX, int currentY, int targetX, int targetY) {
-		int distance = Math.abs(targetX - currentX) + Math.abs(targetY - currentY);
+		int distance = (int) Math.sqrt(Math.pow((targetX-currentX), 2) + Math.pow(targetY-currentY, 2));
 		return distance;
 	}
 

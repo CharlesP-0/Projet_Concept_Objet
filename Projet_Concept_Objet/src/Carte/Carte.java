@@ -7,7 +7,7 @@ import Personnage.Nordique;
 import Personnage.Orcs;
 
 public class Carte {
-	private Colonne[] carte;
+	private Colonne[] colonnes;
 	private int nbColonne;
 	private int nbLigne;
 	// Penser à ajouter le plugin
@@ -39,11 +39,23 @@ public class Carte {
 	public Carte(int ligne, int colonne) {
 		this.nbColonne = colonne;
 		this.nbLigne = ligne;
-		this.carte = new Colonne[nbColonne];
+		this.colonnes = new Colonne[nbColonne];
 		for (int i = 0; i < nbColonne; i++) {
-			this.carte[i] = new Colonne(nbLigne);
+			this.colonnes[i] = new Colonne(nbLigne);
 		}
 		System.out.println("La carte a bien été créée");
+	}
+
+	public SafeZone getSafeZone(int x, int y) {
+		if (this.isASafeZone(x, y)) {
+			return this.getCase(x, y).getSafeZone();
+		} else {
+			return null;
+		}
+	}
+
+	public Case getCase(int x, int y) {
+		return this.colonnes[x].getCases()[y];
 	}
 
 	/**
@@ -63,8 +75,8 @@ public class Carte {
 		} else {
 			for (int i = departX; i <= finX; i++) {
 				for (int j = departY; j <= finY; j++) {
-					this.carte[i].getCases()[j].setASafeZone(true);
-					this.carte[i].getCases()[j].setSafeZone(ville);
+					this.getCase(i,j).setASafeZone(true);
+					this.getCase(i,j).setSafeZone(ville);
 				}
 			}
 			System.out.println(
@@ -81,21 +93,22 @@ public class Carte {
 	 * @param entity The entity that occupies the specified case.
 	 */
 	public void setOccupation(int x, int y, Entity entity) {
-		this.carte[x].getCases()[y].setOccupied(true);
-		this.carte[x].getCases()[y].setIsOccupiedBy(entity);
+		this.getCase(x,y).setOccupied(true);
+		this.getCase(x,y).setIsOccupiedBy(entity);
 		System.out.println(String.format("Entity " + entity + " as been set at [%d,%d]", x, y));
 	}
 
 	public Entity getOccupation(int x, int y) {
-		if (this.carte[x].getCases()[y].isOccupied()) {
-			return this.carte[x].getCases()[y].getIsOccupiedBy();
+		if (this.getCase(x,y).isOccupied()) {
+			return this.getCase(x,y).getIsOccupiedBy();
 		} else {
 			return null;
 		}
 	}
-	public void freeOccupation (int x, int y) {
-		this.carte[x].getCases()[y].setOccupied(false);
-		this.carte[x].getCases()[y].setIsOccupiedBy(null);
+
+	public void freeOccupation(int x, int y) {
+		this.getCase(x,y).setOccupied(false);
+		this.getCase(x,y).setIsOccupiedBy(null);
 	}
 
 	/**
@@ -106,11 +119,11 @@ public class Carte {
 	 * @return Return true if the case is occupied and false if not.
 	 */
 	public boolean isOccupied(int x, int y) {
-		boolean occupied = this.carte[x].getCases()[y].isOccupied();
+		boolean occupied = this.getCase(x,y).isOccupied();
 		if (occupied) {
-			//System.out.println(String.format("La case [%d,%d] est occupée", x, y));
+			// System.out.println(String.format("La case [%d,%d] est occupée", x, y));
 		} else {
-			//System.out.println(String.format("La case [%d,%d] n'est pas occupée", x, y));
+			// System.out.println(String.format("La case [%d,%d] n'est pas occupée", x, y));
 		}
 		return occupied;
 	}
@@ -123,9 +136,9 @@ public class Carte {
 	 * @return Return true if the case is a safezone and false if not.
 	 */
 	public boolean isASafeZone(int x, int y) {
-		boolean isASafezone = this.carte[x].getCases()[y].isASafeZone();
+		boolean isASafezone = this.getCase(x,y).isASafeZone();
 		if (isASafezone) {
-			SafeZone safezone = this.carte[x].getCases()[y].getSafeZone();
+			SafeZone safezone = this.getCase(x,y).getSafeZone();
 			System.out.println(String.format("La case [%d,%d] est une safezone de " + safezone, x, y));
 		} else {
 			System.out.println(String.format("La case [%d,%d] n'est pas une safezone", x, y));
@@ -140,27 +153,27 @@ public class Carte {
 	public void displayMap() {
 		for (int i = 0; i < this.nbLigne; i++) {
 			for (int j = 0; j < this.nbColonne; j++) {
-				if (this.carte[j].getCases()[i].isASafeZone()) {
-					if (this.carte[j].getCases()[i].getSafeZone() == SafeZone.EPERVINE) {
-						System.out.print(red + " E" + black);
-					} else if (this.carte[j].getCases()[i].getSafeZone() == SafeZone.MARKATH) {
-						System.out.print(green + " M" + black);
-					} else if (this.carte[j].getCases()[i].getSafeZone() == SafeZone.FORTDHIVER) {
-						System.out.print(blue + " F" + black);
-					} else if (this.carte[j].getCases()[i].getSafeZone() == SafeZone.SOLITUDE) {
-						System.out.print(purple + " S" + black);
-					}
-				} else if (this.carte[j].getCases()[i].isOccupied()) {
-					if (this.carte[j].getCases()[i].getIsOccupiedBy().getClass() == Khajit.class) {
+				if (this.getCase(j,i).isOccupied()) {
+					if (this.getCase(j,i).getIsOccupiedBy().getClass() == Khajit.class) {
 						System.out.print(blue + " K" + black);
-					} else if (this.carte[j].getCases()[i].getIsOccupiedBy().getClass() == ElfeNoir.class) {
+					} else if (this.getCase(j,i).getIsOccupiedBy().getClass() == ElfeNoir.class) {
 						System.out.print(purple + " N" + black);
-					} else if (this.carte[j].getCases()[i].getIsOccupiedBy().getClass() == Nordique.class) {
+					} else if (this.getCase(j,i).getIsOccupiedBy().getClass() == Nordique.class) {
 						System.out.print(green + " N" + black);
-					} else if (this.carte[j].getCases()[i].getIsOccupiedBy().getClass() == Orcs.class) {
+					} else if (this.getCase(j,i).getIsOccupiedBy().getClass() == Orcs.class) {
 						System.out.print(red + " O" + black);
 					} else {
 						System.out.print(yellow + " X" + black);
+					}
+				} else if (this.getCase(j,i).isASafeZone()) {
+					if (this.getCase(j,i).getSafeZone() == SafeZone.EPERVINE) {
+						System.out.print(red + " E" + black);
+					} else if (this.getCase(j,i).getSafeZone() == SafeZone.MARKATH) {
+						System.out.print(green + " M" + black);
+					} else if (this.getCase(j,i).getSafeZone() == SafeZone.FORTDHIVER) {
+						System.out.print(blue + " F" + black);
+					} else if (this.getCase(j,i).getSafeZone() == SafeZone.SOLITUDE) {
+						System.out.print(purple + " S" + black);
 					}
 				} else {
 					System.out.print(" .");
