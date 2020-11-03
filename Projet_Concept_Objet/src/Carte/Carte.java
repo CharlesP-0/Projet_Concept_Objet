@@ -3,6 +3,10 @@ package Carte;
 import Personnage.ElfeNoir;
 import Personnage.Entity;
 import Personnage.Khajit;
+import Personnage.MaitreElfeNoir;
+import Personnage.MaitreKhajit;
+import Personnage.MaitreNordique;
+import Personnage.MaitreOrc;
 import Personnage.Nordique;
 import Personnage.Orcs;
 
@@ -95,7 +99,6 @@ public class Carte {
 	public void setOccupation(int x, int y, Entity entity) {
 		this.getCase(x,y).setOccupied(true);
 		this.getCase(x,y).setIsOccupiedBy(entity);
-		System.out.println(String.format("Entity " + entity + " as been set at [%d,%d]", x, y));
 	}
 
 	public Entity getOccupation(int x, int y) {
@@ -139,9 +142,7 @@ public class Carte {
 		boolean isASafezone = this.getCase(x,y).isASafeZone();
 		if (isASafezone) {
 			SafeZone safezone = this.getCase(x,y).getSafeZone();
-			System.out.println(String.format("La case [%d,%d] est une safezone de " + safezone, x, y));
 		} else {
-			System.out.println(String.format("La case [%d,%d] n'est pas une safezone", x, y));
 		}
 		return isASafezone;
 	}
@@ -154,13 +155,13 @@ public class Carte {
 		for (int i = 0; i < this.nbLigne; i++) {
 			for (int j = 0; j < this.nbColonne; j++) {
 				if (this.getCase(j,i).isOccupied()) {
-					if (this.getCase(j,i).getIsOccupiedBy().getClass() == Khajit.class) {
+					if (this.getCase(j,i).getIsOccupiedBy().getClass() == Khajit.class || this.getCase(j,i).getIsOccupiedBy().getClass() == MaitreKhajit.class) {
 						System.out.print(blue + " K" + black);
-					} else if (this.getCase(j,i).getIsOccupiedBy().getClass() == ElfeNoir.class) {
+					} else if (this.getCase(j,i).getIsOccupiedBy().getClass() == ElfeNoir.class|| this.getCase(j,i).getIsOccupiedBy().getClass() == MaitreElfeNoir.class) {
 						System.out.print(purple + " N" + black);
-					} else if (this.getCase(j,i).getIsOccupiedBy().getClass() == Nordique.class) {
+					} else if (this.getCase(j,i).getIsOccupiedBy().getClass() == Nordique.class|| this.getCase(j,i).getIsOccupiedBy().getClass() == MaitreNordique.class) {
 						System.out.print(green + " N" + black);
-					} else if (this.getCase(j,i).getIsOccupiedBy().getClass() == Orcs.class) {
+					} else if (this.getCase(j,i).getIsOccupiedBy().getClass() == Orcs.class|| this.getCase(j,i).getIsOccupiedBy().getClass() == MaitreOrc.class) {
 						System.out.print(red + " O" + black);
 					} else {
 						System.out.print(yellow + " X" + black);
