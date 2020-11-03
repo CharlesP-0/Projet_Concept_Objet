@@ -14,6 +14,7 @@ import Personnage.MaitreNordique;
 import Personnage.MaitreOrc;
 import Personnage.Nordique;
 import Personnage.Obstacle;
+import Personnage.Orcs;
 
 public class Simulation {
 
@@ -37,12 +38,12 @@ public class Simulation {
 		MaitreKhajit maitreKhajit = MaitreKhajit.getInstance();
 		MaitreNordique maitreNordique = MaitreNordique.getInstance();
 		Khajit test = new Khajit("Jzargo", messageKhajit, maitreKhajit);
-		Nordique test2 = new Nordique("Lidya", messagenordique, maitreNordique);
+		Orcs test2 = new Orcs("Lidya", messagenordique, maitreNordique);
 		carte.setCaseAsSafeZone(0, 0, 4, 4, SafeZone.FORTDHIVER);
 		carte.setOccupation(0, 0, maitreKhajit);
 		maitreKhajit.setPositionX(0);
 		maitreKhajit.setPositionY(0);
-		carte.setOccupation(1, 1, maitreNordique);
+		carte.setOccupation(15, 15, maitreNordique);
 		maitreNordique.setPositionX(1);
 		maitreNordique.setPositionY(1);
 		carte.setOccupation(5, 3, test);
@@ -51,8 +52,8 @@ public class Simulation {
 		test.setPointAction(100);
 		carte.setOccupation(13, 13, test2);
 		System.out.println("Test 2 set");
-		test2.setPositionX(3);
-		test2.setPositionY(3);
+		test2.setPositionX(13);
+		test2.setPositionY(13);
 		carte.isOccupied(5, 3);
 		carte.isOccupied(15, 13);
 		carte.isOccupied(13, 3);

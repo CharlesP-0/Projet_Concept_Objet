@@ -7,7 +7,6 @@ import Message.Message;
 
 public class Khajit extends Personnage {
 	private String name;
-	private int pointAction = 100;
 	private Message[] messages;
 	private String lastDirection;
 	private MaitreKhajit maitre;

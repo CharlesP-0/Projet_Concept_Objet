@@ -9,12 +9,11 @@ public class ElfeNoir extends Personnage {
 	private String name;
 	private List<Message> messages;
 	private String lastDirection;
-	private int pointAction;
 	private static int nbInstance = 0;
 	private MaitreElfeNoir maitre;
 
 	public void incrPointAction() {
-		this.pointAction = 100;
+		super.pointAction = 100;
 	}
 
 	public ElfeNoir(String nom, List<Message> messageClasse, MaitreElfeNoir master) {

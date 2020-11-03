@@ -12,7 +12,7 @@ import Message.Message;
 public abstract class Personnage extends Entity {
 	private String name;
 	private SafeZone safezone;
-	private int pointAction;
+	protected int pointAction;
 	private Message[] messages;
 	private List<Message> messagesReceived;
 	private String lastDirection;
@@ -132,7 +132,8 @@ public abstract class Personnage extends Entity {
 	public void move(Carte carte) throws InterruptedException {
 		int x;
 		int y;
-		List<String> directions = pathFinding(this, carte, this.maxMovement);
+		List<String> directions = pathFinding(target, carte, this.maxMovement);
+		System.out.println(directions);
 		for (String direction : directions) {
 			x = directionToIndexX(this.positionX, direction);
 			y = directionToIndexY(this.positionY, direction);
@@ -191,8 +192,9 @@ public abstract class Personnage extends Entity {
 			for (int i = 0; i < carte.getNbLigne(); i++) {
 				for (int j = 0; j < carte.getNbColonne(); j++) {
 					if (carte.isOccupied(i, j) && carte.getOccupation(i, j).getClass() != this.getClass()
-							&& (carte.getOccupation(i, j) instanceof Personnage) && !(carte.getOccupation(i, j) instanceof Maitre)
-					 && carte.getOccupation(i, j) != previousTarget ) {
+							&& (carte.getOccupation(i, j) instanceof Personnage)
+							&& !(carte.getOccupation(i, j) instanceof Maitre)
+							&& carte.getOccupation(i, j) != previousTarget) {
 						/*
 						 * On vérifie que l'entité qui occupe la case n'est pas un personnage de la même
 						 * race (et par la même occasion, qu'il ne se prenne pas lui-même pour cible) ou
@@ -205,6 +207,9 @@ public abstract class Personnage extends Entity {
 				}
 			}
 		} else {
+			this.target = maitre;
+		}
+		if (this.target == this.previousTarget) {
 			this.target = maitre;
 		}
 	}

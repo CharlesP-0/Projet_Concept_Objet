@@ -7,10 +7,9 @@ import Message.Message;
 
 public class Orcs extends Personnage {
 	private String name;
-	private int pointAction;
-	private List<Message> messages;
+	private Message[] messages;
 	private String lastDirection;
-	private MaitreOrc maitre;
+	private MaitreNordique maitre;
 	private int nbInstance= 0;
 
 	public void incrPointAction() {
@@ -25,11 +24,11 @@ public class Orcs extends Personnage {
 			this.incrPointAction();
 		}
 	}
-	public Orcs(String nom, List<Message> messageClasse, MaitreOrc master) {
+	public Orcs(String nom, Message[] messagenordique, MaitreNordique master) {
 		if (this.nbInstance < 4) {
 			this.name = nom;
 			this.nbInstance++;
-			this.messages = messageClasse;
+			this.messages = messagenordique;
 			this.maitre = master;
 			this.incrPointAction();
 			super.maitre = this.maitre;
