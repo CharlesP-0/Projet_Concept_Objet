@@ -23,4 +23,8 @@ public class Khajit extends Personnage {
 			this.setSafezone(SafeZone.FORTDHIVER);
 		}
 	}			
+	@Override
+	public String toString() {
+		return this.name;
+	}
 }

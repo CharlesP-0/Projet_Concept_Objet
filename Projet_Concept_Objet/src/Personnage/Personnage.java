@@ -15,7 +15,7 @@ public abstract class Personnage extends Entity {
 	protected int pointAction = 100;
 	protected Message[] messages = new Message[4];
 	private List<Message> messagesReceived = new ArrayList<Message>();
-	protected int valeur = 0;
+	private int valeur = 0;
 	private String lastDirection;
 	private boolean isOutOfAP = false;
 	private int positionX;
@@ -164,16 +164,14 @@ public abstract class Personnage extends Entity {
 		// confrontation between the two
 		boolean sameAlliance = this.getClass() == personnage.getClass();
 		if (sameAlliance && !(personnage instanceof Maitre)) {
-			System.out.println(this + "meet " + personnage);
+			System.out.println(this.toString() + "meet " + personnage.toString());
 			this.takeMsgFrom(personnage);
 			personnage.takeMsgFrom(this);
 		} else {
-			System.out.println(this + "meet " + personnage);
+			System.out.println(this.toString() + " meet " + personnage.toString());
 			if (this.pointAction > personnage.getPointAction()) {
-				System.out.println("Reçois message");
 				this.takeMsgFrom(personnage);
 			} else {
-				System.out.println("Donne message");
 				personnage.takeMsgFrom(this);
 			}
 			this.previousTarget = personnage;
@@ -184,15 +182,10 @@ public abstract class Personnage extends Entity {
 	}
 
 	public void takeMsgFrom(Personnage personnage) {
-		System.out.println("message pas reçu");
 		Message messageReceived = personnage.giveMsg();
-		System.out.println("message reçu");
 		int poids = messageReceived.getPoids();
-		System.out.println("Plante à poids ?");
-		this.valeur += poids;
-		System.out.println("ajout valeur");
+		this.setValeur(this.getValeur() + poids);
 		this.messagesReceived.add(messageReceived);
-		System.out.println("ajout message");
 
 	}
 
@@ -200,22 +193,18 @@ public abstract class Personnage extends Entity {
 		Random gen = new Random();
 		int length = this.messages.length;
 		int test = gen.nextInt(length);
-		System.out.println(test);
 		Message renvoie = new Message();
-		System.out.println("renvoie crée");
 		renvoie.poids = this.messages[test].getPoids();
-		System.out.println("get pods passé");
-		renvoie.setContent(this.messages[test].getContent());	
-		System.out.println("content passé");
+		renvoie.setContent(this.messages[test].getContent());
 		return renvoie;
 	}
 
 	public void setTarget(Carte carte) {
 		float distance = (carte.getNbColonne() * carte.getNbLigne()) + 1;
-		if (this.pointAction > 20 && valeur < 3) {
-			for (int i = 0; i < carte.getNbLigne(); i++) {
-				for (int j = 0; j < carte.getNbColonne(); j++) {
-					if (carte.isOccupied(i, j) && (carte.getOccupation(i, j) instanceof Personnage)
+		if (this.pointAction > 20 && getValeur() < 12) {
+			for (int i = 0; i < carte.getNbLigne() - 1; i++) {
+				for (int j = 0; j < carte.getNbColonne() - 1; j++) {
+					if (carte.isOccupied(i, j) && (carte.getOccupation(i, j) instanceof Personnage && carte.getOccupation(i, j).getClass() != this.getClass())
 							&& !(carte.getOccupation(i, j) instanceof Maitre)
 							&& carte.getOccupation(i, j) != previousTarget) {
 						/*
@@ -223,7 +212,7 @@ public abstract class Personnage extends Entity {
 						 * race (et par la même occasion, qu'il ne se prenne pas lui-même pour cible) ou
 						 * un personnage qu'il a déjà rencontré précédemment
 						 */
-						if (distance(this.positionX, this.positionY, i, j) < distance) {
+						if (distance(this.positionX, this.positionY, i, j) <= distance) {
 							this.previousTarget = this.target;
 							this.target = (Personnage) carte.getOccupation(i, j);
 						}
@@ -231,9 +220,6 @@ public abstract class Personnage extends Entity {
 				}
 			}
 		} else {
-			this.target = maitre;
-		}
-		if (this.target == this.previousTarget) {
 			this.target = maitre;
 		}
 	}
@@ -409,4 +395,11 @@ public abstract class Personnage extends Entity {
 		return (currentY + indexY);
 	}
 
+	public int getValeur() {
+		return valeur;
+	}
+
+	public void setValeur(int valeur) {
+		this.valeur = valeur;
+	}
 }

@@ -25,4 +25,8 @@ public class Nordique extends Personnage {
 			this.setSafezone(SafeZone.MARKATH);
 		}
 	}
+	@Override
+	public String toString() {
+		return this.name;
+	}
 }

@@ -24,24 +24,41 @@ public class Simulation {
 
 	public static void main(String[] args) throws InterruptedException {
 		boolean won = false;
+		int tour = 0;
 		Carte carte = new Carte(20, 20);
 		Maitre winner = null;
+		
+		
+		
+		
 		MaitreKhajit maitreKhajit = MaitreKhajit.getInstance();
 		MaitreNordique maitreNordique = MaitreNordique.getInstance();
 		MaitreOrc maitreOrc = MaitreOrc.getInstance();
 		MaitreElfeNoir maitreElfeNoir = MaitreElfeNoir.getInstance();
-		Khajit testk1 = new Khajit("Jzargo", maitreKhajit);
+		
+		
+		
+		
+		
+		
+		Khajit testk1 = new Khajit("Do'Kheran", maitreKhajit);
+		Khajit testk2 = new Khajit("Harassa-Ko", maitreKhajit);
+		Khajit testk3 = new Khajit("Ri'Dar-Jo", maitreKhajit);
 		Orcs testo1 = new Orcs("Shazog gro-Dumul", maitreOrc);
-		Nordique testn1 = new Nordique("Lidya", maitreNordique);
-		ElfeNoir teste1 = new ElfeNoir("Erandur", maitreElfeNoir);
-		Khajit testk2 = new Khajit("Jzargo", maitreKhajit);
-		Orcs testo2 = new Orcs("Shazog gro-Dumul", maitreOrc);
-		Nordique testn2 = new Nordique("Lidya", maitreNordique);
-		ElfeNoir teste2 = new ElfeNoir("Erandur", maitreElfeNoir);
-		Khajit testk3 = new Khajit("Jzargo", maitreKhajit);
-		Orcs testo3 = new Orcs("Shazog gro-Dumul", maitreOrc);
-		Nordique testn3 = new Nordique("Lidya", maitreNordique);
-		ElfeNoir teste3 = new ElfeNoir("Erandur", maitreElfeNoir);
+		Orcs testo2 = new Orcs("Mazoga gra-Dula", maitreOrc);
+		Orcs testo3 = new Orcs("Rogbut gro-Drublog", maitreOrc);
+		Nordique testn1 = new Nordique("Lisaa", maitreNordique);
+		Nordique testn2 = new Nordique("Narfar", maitreNordique);
+		Nordique testn3 = new Nordique("Ulfeidr", maitreNordique);
+		ElfeNoir teste1 = new ElfeNoir("Farwil Herandus", maitreElfeNoir);
+		ElfeNoir teste2 = new ElfeNoir("Velis Indoran", maitreElfeNoir);
+		ElfeNoir teste3 = new ElfeNoir("Falena Kaushminipu", maitreElfeNoir);
+		
+		
+		
+		
+		
+		
 		carte.setCaseAsSafeZone(0, 0, 4, 4, SafeZone.FORTDHIVER);
 		carte.setCaseAsSafeZone(0, 15, 4, 19, SafeZone.MARKATH);
 		carte.setCaseAsSafeZone(15, 15, 19, 19, SafeZone.EPERVINE);
@@ -63,7 +80,8 @@ public class Simulation {
 		carte.setOccupation(4, 16, testn3);
 		carte.setOccupation(15, 3, teste3);
 
-		int quantity = 50;
+		Random rand = new Random();
+		int quantity = rand.nextInt(150);
 		Obstacle[] listObstacles = null;
 		generateObstacle(quantity, carte, listObstacles);
 
@@ -72,27 +90,26 @@ public class Simulation {
 		listePersonnage[1] = maitreNordique;
 		listePersonnage[2] = maitreOrc;
 		listePersonnage[3] = maitreElfeNoir;
-		listePersonnage[5] = testk1;
 		listePersonnage[4] = testo1;
+		listePersonnage[5] = testk1;
 		listePersonnage[6] = testn1;
 		listePersonnage[7] = teste1;
-		listePersonnage[9] = testk2;
 		listePersonnage[8] = testo2;
+		listePersonnage[9] = testk2;
 		listePersonnage[10] = testn2;
 		listePersonnage[11] = teste2;
-		listePersonnage[13] = testk3;
 		listePersonnage[12] = testo3;
+		listePersonnage[13] = testk3;
 		listePersonnage[14] = testn3;
 		listePersonnage[15] = teste3;
-		while (!won) {
-			carte.displayMap();
-			TimeUnit.SECONDS.sleep(1);
+		while (!won && tour != 200) {
+			tour++;
 			for (Personnage personnage : listePersonnage) {
 				if (personnage == null) {
 					continue;
 				}
 				if (!(personnage instanceof Maitre)) {
-					System.out.println(personnage);
+					System.out.println("C'est à " + personnage.toString());
 					personnage.setTarget(carte);
 					personnage.move(carte);
 				}
@@ -110,8 +127,32 @@ public class Simulation {
 				won = true;
 				winner = maitreElfeNoir;
 			}
+			System.out.println();
+			System.out.println();
+			System.out.println("Fit du tour : " + tour);
+			System.out.println();
+			System.out.println();
+			for (Personnage personnage : listePersonnage) {
+				if (personnage == null) {
+					continue;
+				}
+				if (!(personnage instanceof Maitre)) {
+					System.out.println(personnage.toString() + " est en [" + personnage.getPositionX() + ","
+							+ personnage.getPositionY() + "], a "+ personnage.getPointAction()+" actions restantes et cible " + personnage.getTarget() + " avec un total de "
+							+ personnage.getValeur() + " points.");
+
+				} else {
+					System.out.println(personnage.toString() + " a "+ personnage.getValeur());
+				}
+			}
+			TimeUnit.SECONDS.sleep(10);
 		}
-		System.out.println("The game is won by "+ winner);
+
+		if (winner != null) {
+			System.out.println("The game is won by " + winner);
+		} else {
+			System.out.println("No winner because we are at " + tour);
+		}
 	}
 
 	public static void generateObstacle(int quantity, Carte carte, Obstacle[] listOfObstacles) {

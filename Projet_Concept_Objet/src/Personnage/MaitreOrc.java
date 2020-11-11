@@ -12,6 +12,7 @@ public class MaitreOrc extends Maitre {
 	private List<Message> listeMessages = new ArrayList<Message>();
 	public int valeur = 0;
 	private MaitreOrc() {
+		this.setName("Kharag gro-Nash");
 	};
 
 	public static MaitreOrc getInstance() {
@@ -28,20 +29,19 @@ public class MaitreOrc extends Maitre {
 
 	@Override
 	public void takeMsgFrom(Personnage personnage) {
-
-		System.out.println("Boucle");
 		for (Message message : personnage.getMessagesReceived()) {
-			System.out.println("test existance");
 			if (message == null) {
 				continue;
 			}
-			System.out.println("existe");
 			System.out.println(this.listeMessages.contains(message));
 			if (!(this.listeMessages.contains(message))) {
-				System.out.println("Pas contenu");
 				this.listeMessages.add(message);
 				this.valeur+= message.getPoids();
 			}
 		}
+	}
+	@Override
+	public String toString() {
+		return ("Maitre Orc : " + this.getName());
 	}
 }

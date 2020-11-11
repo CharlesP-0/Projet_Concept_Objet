@@ -1,6 +1,5 @@
 package Personnage;
 
-import Carte.Carte;
 import Carte.SafeZone;
 import Message.Message;
 
@@ -23,5 +22,9 @@ public class Orcs extends Personnage {
 			super.maitre = this.maitre;
 			this.setSafezone(SafeZone.EPERVINE);
 		}
+	}
+	@Override
+	public String toString() {
+		return this.name;
 	}
 }

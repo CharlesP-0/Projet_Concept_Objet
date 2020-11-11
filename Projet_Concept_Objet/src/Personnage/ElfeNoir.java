@@ -24,5 +24,9 @@ public class ElfeNoir extends Personnage {
 			this.setSafezone(SafeZone.SOLITUDE);
 		}
 	}
+	@Override
+	public String toString() {
+		return this.name;
+	}
 
 }
