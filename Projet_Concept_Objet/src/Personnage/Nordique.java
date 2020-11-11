@@ -7,7 +7,6 @@ import Message.Message;
 public class Nordique extends Personnage {
 	private String name;
 	private int pointAction = 100;
-	private Message[] messages = new Message[4];
 	private String lastDirection;
 	private MaitreNordique maitre;
 	private static int nbInstance = 0;

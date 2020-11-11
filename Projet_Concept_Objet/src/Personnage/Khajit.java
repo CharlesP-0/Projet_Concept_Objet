@@ -5,7 +5,6 @@ import Message.Message;
 
 public class Khajit extends Personnage {
 	private String name;
-	private Message[] messages = new Message[4];
 	private String lastDirection;
 	private MaitreKhajit maitre;
 	private static int nbInstance = 0;

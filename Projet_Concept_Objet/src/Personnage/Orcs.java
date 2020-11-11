@@ -6,7 +6,6 @@ import Message.Message;
 
 public class Orcs extends Personnage {
 	private String name;
-	private Message[] messages = new Message[4];
 	private String lastDirection;
 	private MaitreOrc maitre;
 	private static int nbInstance= 0;

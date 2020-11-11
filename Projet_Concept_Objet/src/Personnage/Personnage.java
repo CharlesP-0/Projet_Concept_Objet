@@ -13,7 +13,7 @@ public abstract class Personnage extends Entity {
 	private String name;
 	private SafeZone safezone;
 	protected int pointAction = 100;
-	private Message[] messages = new Message[4];
+	protected Message[] messages = new Message[4];
 	private List<Message> messagesReceived = new ArrayList<Message>();
 	protected int valeur = 0;
 	private String lastDirection;
@@ -128,14 +128,14 @@ public abstract class Personnage extends Entity {
 	public void move(Carte carte) throws InterruptedException {
 		int x;
 		int y;
+		this.setTarget(carte);
 		List<String> directions = pathFinding(this.getTarget(), carte, this.maxMovement);
 		if (!(this.isOutOfAP)) {
 			for (String direction : directions) {
 				x = directionToIndexX(this.positionX, direction);
 				y = directionToIndexY(this.positionY, direction);
 				if (carte.isOccupied(x, y)) {
-					if (carte.getOccupation(x, y).getClass() != this.getClass()
-							&& (carte.getOccupation(x, y) instanceof Personnage)) {
+					if (carte.getOccupation(x, y) instanceof Personnage) {
 						this.meet((Personnage) carte.getOccupation(x, y), carte);
 						break;
 					}
@@ -151,6 +151,7 @@ public abstract class Personnage extends Entity {
 					if (carte.isASafeZone(this.positionX, this.positionY)) {
 						this.maitre.meet(this, carte);
 						this.setPreviousTarget(maitre);
+						this.setTarget(carte);
 						this.incrPointAction();
 					}
 					TimeUnit.SECONDS.sleep(1);
@@ -163,9 +164,11 @@ public abstract class Personnage extends Entity {
 		// confrontation between the two
 		boolean sameAlliance = this.getClass() == personnage.getClass();
 		if (sameAlliance && !(personnage instanceof Maitre)) {
+			System.out.println(this + "meet " + personnage);
 			this.takeMsgFrom(personnage);
 			personnage.takeMsgFrom(this);
 		} else {
+			System.out.println(this + "meet " + personnage);
 			if (this.pointAction > personnage.getPointAction()) {
 				System.out.println("Reçois message");
 				this.takeMsgFrom(personnage);
@@ -185,7 +188,7 @@ public abstract class Personnage extends Entity {
 		Message messageReceived = personnage.giveMsg();
 		System.out.println("message reçu");
 		int poids = messageReceived.getPoids();
-		System.out.println("Plante à poids");
+		System.out.println("Plante à poids ?");
 		this.valeur += poids;
 		System.out.println("ajout valeur");
 		this.messagesReceived.add(messageReceived);
@@ -198,9 +201,12 @@ public abstract class Personnage extends Entity {
 		int length = this.messages.length;
 		int test = gen.nextInt(length);
 		System.out.println(test);
-		Message renvoie = new Message(); 
+		Message renvoie = new Message();
+		System.out.println("renvoie crée");
 		renvoie.poids = this.messages[test].getPoids();
-		renvoie.setContent(this.messages[test].getContent());		
+		System.out.println("get pods passé");
+		renvoie.setContent(this.messages[test].getContent());	
+		System.out.println("content passé");
 		return renvoie;
 	}
 

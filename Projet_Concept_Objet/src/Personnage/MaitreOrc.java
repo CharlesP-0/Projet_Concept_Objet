@@ -1,5 +1,6 @@
 package Personnage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import Carte.Carte;
@@ -8,7 +9,7 @@ import Message.Message;
 public class MaitreOrc extends Maitre {
 
 	private static MaitreOrc lUnique = null;
-	private List<Message> listeMessages;
+	private List<Message> listeMessages = new ArrayList<Message>();
 	public int valeur = 0;
 	private MaitreOrc() {
 	};
@@ -33,7 +34,10 @@ public class MaitreOrc extends Maitre {
 			System.out.println("test existance");
 			if (message == null) {
 				continue;
-			}if (!(this.listeMessages.contains(message))) {
+			}
+			System.out.println("existe");
+			System.out.println(this.listeMessages.contains(message));
+			if (!(this.listeMessages.contains(message))) {
 				System.out.println("Pas contenu");
 				this.listeMessages.add(message);
 				this.valeur+= message.getPoids();

@@ -1,5 +1,6 @@
 package Personnage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import Carte.Carte;
@@ -8,7 +9,7 @@ import Message.Message;
 public class MaitreNordique extends Maitre {
 
 	private static MaitreNordique lUnique = null;
-	private List<Message> listeMessages;
+	private List<Message> listeMessages= new ArrayList<Message>();
 	public int valeur = 0;
 
 	private MaitreNordique() {

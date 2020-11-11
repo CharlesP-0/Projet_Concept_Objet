@@ -25,7 +25,7 @@ public class Simulation {
 	public static void main(String[] args) throws InterruptedException {
 		boolean won = false;
 		Carte carte = new Carte(20, 20);
-
+		Maitre winner = null;
 		MaitreKhajit maitreKhajit = MaitreKhajit.getInstance();
 		MaitreNordique maitreNordique = MaitreNordique.getInstance();
 		MaitreOrc maitreOrc = MaitreOrc.getInstance();
@@ -72,16 +72,16 @@ public class Simulation {
 		listePersonnage[1] = maitreNordique;
 		listePersonnage[2] = maitreOrc;
 		listePersonnage[3] = maitreElfeNoir;
-		listePersonnage[4] = testk1;
-		listePersonnage[5] = testo1;
+		listePersonnage[5] = testk1;
+		listePersonnage[4] = testo1;
 		listePersonnage[6] = testn1;
 		listePersonnage[7] = teste1;
-		listePersonnage[8] = testk2;
-		listePersonnage[9] = testo2;
+		listePersonnage[9] = testk2;
+		listePersonnage[8] = testo2;
 		listePersonnage[10] = testn2;
 		listePersonnage[11] = teste2;
-		listePersonnage[12] = testk3;
-		listePersonnage[13] = testo3;
+		listePersonnage[13] = testk3;
+		listePersonnage[12] = testo3;
 		listePersonnage[14] = testn3;
 		listePersonnage[15] = teste3;
 		while (!won) {
@@ -97,16 +97,21 @@ public class Simulation {
 					personnage.move(carte);
 				}
 			}
-			if (maitreNordique.valeur >= 4) {
+			if (maitreNordique.valeur >= 12) {
 				won = true;
-			} else if (maitreKhajit.valeur >= 4) {
+				winner = maitreNordique;
+			} else if (maitreKhajit.valeur >= 12) {
 				won = true;
-			} else if (maitreOrc.valeur >= 4) {
+				winner = maitreKhajit;
+			} else if (maitreOrc.valeur >= 12) {
 				won = true;
-			} else if (maitreElfeNoir.valeur >= 4) {
+				winner = maitreOrc;
+			} else if (maitreElfeNoir.valeur >= 12) {
 				won = true;
+				winner = maitreElfeNoir;
 			}
 		}
+		System.out.println("The game is won by "+ winner);
 	}
 
 	public static void generateObstacle(int quantity, Carte carte, Obstacle[] listOfObstacles) {
