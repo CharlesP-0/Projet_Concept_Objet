@@ -12,21 +12,21 @@ import Message.Message;
 public abstract class Personnage extends Entity {
 	private String name;
 	private SafeZone safezone;
-	protected int pointAction;
-	private Message[] messages;
-	private List<Message> messagesReceived;
+	protected int pointAction = 100;
+	private Message[] messages = new Message[4];
+	private List<Message> messagesReceived = new ArrayList<Message>();
+	protected int valeur = 0;
 	private String lastDirection;
-	private int alliance;
-	private boolean isOutOfAP;
+	private boolean isOutOfAP = false;
 	private int positionX;
 	private int positionY;
-	private Personnage target;
-	private Personnage previousTarget;
+	private Personnage target = null;
+	private Personnage previousTarget = null;
 	protected Maitre maitre;
 	private int maxMovement;
 
 	public Personnage() {
-		this.maxMovement = 15;
+		this.maxMovement = 5;
 	}
 
 	public String getName() {
@@ -85,14 +85,6 @@ public abstract class Personnage extends Entity {
 		this.lastDirection = lastDirection;
 	}
 
-	public int getAlliance() {
-		return alliance;
-	}
-
-	public void setAlliance(int alliance) {
-		this.alliance = alliance;
-	}
-
 	public boolean isOutOfAP() {
 		return isOutOfAP;
 	}
@@ -129,70 +121,95 @@ public abstract class Personnage extends Entity {
 		this.previousTarget = previousTarget;
 	}
 
+	public void incrPointAction() {
+		this.pointAction = 100;
+	}
+
 	public void move(Carte carte) throws InterruptedException {
 		int x;
 		int y;
-		List<String> directions = pathFinding(target, carte, this.maxMovement);
-		System.out.println(directions);
-		for (String direction : directions) {
-			x = directionToIndexX(this.positionX, direction);
-			y = directionToIndexY(this.positionY, direction);
-			if (carte.isOccupied(x, y)) {
-				if (carte.getOccupation(x, y).getClass() != this.getClass()
-						&& (carte.getOccupation(x, y) instanceof Personnage)) {
-					// this.meet((Personnage) carte.getOccupation(x, y), carte);
-					System.out.println("Meet");
-					break;
+		List<String> directions = pathFinding(this.getTarget(), carte, this.maxMovement);
+		if (!(this.isOutOfAP)) {
+			for (String direction : directions) {
+				x = directionToIndexX(this.positionX, direction);
+				y = directionToIndexY(this.positionY, direction);
+				if (carte.isOccupied(x, y)) {
+					if (carte.getOccupation(x, y).getClass() != this.getClass()
+							&& (carte.getOccupation(x, y) instanceof Personnage)) {
+						this.meet((Personnage) carte.getOccupation(x, y), carte);
+						break;
+					}
+				} else {
+					carte.freeOccupation(this.positionX, this.positionY);
+					carte.setOccupation(x, y, this);
+					this.lastDirection = direction;
+					carte.displayMap();
+					this.pointAction--;
+					if (this.pointAction <= 0) {
+						this.isOutOfAP = true;
+					}
+					if (carte.isASafeZone(this.positionX, this.positionY)) {
+						this.maitre.meet(this, carte);
+						this.setPreviousTarget(maitre);
+						this.incrPointAction();
+					}
+					TimeUnit.SECONDS.sleep(1);
 				}
-			} else {
-				carte.freeOccupation(this.positionX, this.positionY);
-				carte.setOccupation(x, y, this);
-				this.positionX = x;
-				this.positionY = y;
-				this.lastDirection = direction;
-				carte.displayMap();
-				TimeUnit.SECONDS.sleep(1);
 			}
 		}
 	}
 
 	public void meet(Personnage personnage, Carte carte) {
 		// confrontation between the two
-		boolean sameAlliance = this.alliance == personnage.getAlliance();
-		if (sameAlliance) {
+		boolean sameAlliance = this.getClass() == personnage.getClass();
+		if (sameAlliance && !(personnage instanceof Maitre)) {
 			this.takeMsgFrom(personnage);
 			personnage.takeMsgFrom(this);
 		} else {
 			if (this.pointAction > personnage.getPointAction()) {
+				System.out.println("Reçois message");
 				this.takeMsgFrom(personnage);
 			} else {
+				System.out.println("Donne message");
 				personnage.takeMsgFrom(this);
 			}
+			this.previousTarget = personnage;
 			this.setTarget(carte);
 			personnage.setPreviousTarget(this);
 			this.pointAction -= 10;
 		}
 	}
 
-	public void takeMsgFrom(Personnage peronnage) {
-		Message messageReceived = giveMsg();
+	public void takeMsgFrom(Personnage personnage) {
+		System.out.println("message pas reçu");
+		Message messageReceived = personnage.giveMsg();
+		System.out.println("message reçu");
+		int poids = messageReceived.getPoids();
+		System.out.println("Plante à poids");
+		this.valeur += poids;
+		System.out.println("ajout valeur");
 		this.messagesReceived.add(messageReceived);
+		System.out.println("ajout message");
 
 	}
 
 	public Message giveMsg() {
 		Random gen = new Random();
-		return this.messages[gen.nextInt(this.messages.length)];
+		int length = this.messages.length;
+		int test = gen.nextInt(length);
+		System.out.println(test);
+		Message renvoie = new Message(); 
+		renvoie.poids = this.messages[test].getPoids();
+		renvoie.setContent(this.messages[test].getContent());		
+		return renvoie;
 	}
 
 	public void setTarget(Carte carte) {
 		float distance = (carte.getNbColonne() * carte.getNbLigne()) + 1;
-		this.previousTarget = this.target;
-		if (this.pointAction > 20) {
+		if (this.pointAction > 20 && valeur < 3) {
 			for (int i = 0; i < carte.getNbLigne(); i++) {
 				for (int j = 0; j < carte.getNbColonne(); j++) {
-					if (carte.isOccupied(i, j) && carte.getOccupation(i, j).getClass() != this.getClass()
-							&& (carte.getOccupation(i, j) instanceof Personnage)
+					if (carte.isOccupied(i, j) && (carte.getOccupation(i, j) instanceof Personnage)
 							&& !(carte.getOccupation(i, j) instanceof Maitre)
 							&& carte.getOccupation(i, j) != previousTarget) {
 						/*
@@ -201,6 +218,7 @@ public abstract class Personnage extends Entity {
 						 * un personnage qu'il a déjà rencontré précédemment
 						 */
 						if (distance(this.positionX, this.positionY, i, j) < distance) {
+							this.previousTarget = this.target;
 							this.target = (Personnage) carte.getOccupation(i, j);
 						}
 					}
@@ -224,7 +242,7 @@ public abstract class Personnage extends Entity {
 	 *         the target
 	 * @throws InterruptedException
 	 */
-	public List<String> pathFinding(Personnage target, Carte carte, int maxMovement) {
+	public List<String> pathFinding(Personnage target, Carte carte, int maxMovement) throws InterruptedException {
 		List<String> directions = new ArrayList<String>();
 		int targetX = target.getPositionX();
 		int targetY = target.getPositionY();
@@ -234,7 +252,7 @@ public abstract class Personnage extends Entity {
 		int testY = currentY;
 		if (currentX != targetX || currentY != targetY) {
 			directions.add(path(currentX, currentY, targetX, targetY, carte));
-			for (int i = 0; i < maxMovement; i++) {
+			for (int i = 0; i < maxMovement - 1; i++) {
 				testX = directionToIndexX(testX, directions.get(i));
 				testY = directionToIndexY(testY, directions.get(i));
 				directions.add(path(testX, testY, targetX, targetY, carte));
@@ -259,8 +277,8 @@ public abstract class Personnage extends Entity {
 	 *         possible of the target
 	 */
 	public String path(int currentX, int currentY, int targetX, int targetY, Carte carte) {
-		int min = (carte.getNbColonne() * carte.getNbLigne()) + 1;
-		int distance;
+		float min = (carte.getNbColonne() * carte.getNbLigne()) + 1;
+		float distance;
 		int coordoneeX = 0;
 		int coordoneeY = 0;
 		for (int i = -1; i < 2; i++) {
@@ -325,8 +343,8 @@ public abstract class Personnage extends Entity {
 	 * @param targetY  The Y coordinate of the target
 	 * @return The distance between the two characters
 	 */
-	public int distance(int currentX, int currentY, int targetX, int targetY) {
-		int distance = (int) Math.sqrt(Math.pow((targetX - currentX), 2) + Math.pow(targetY - currentY, 2));
+	public float distance(int currentX, int currentY, int targetX, int targetY) {
+		float distance = (float) Math.sqrt(Math.pow((targetX - currentX), 2) + Math.pow(targetY - currentY, 2));
 		return distance;
 	}
 

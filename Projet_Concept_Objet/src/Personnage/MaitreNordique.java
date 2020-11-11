@@ -7,9 +7,10 @@ import Message.Message;
 
 public class MaitreNordique extends Maitre {
 
-	private static MaitreNordique lUnique =null;
+	private static MaitreNordique lUnique = null;
 	private List<Message> listeMessages;
 	public int valeur = 0;
+
 	private MaitreNordique() {
 	};
 
@@ -27,8 +28,14 @@ public class MaitreNordique extends Maitre {
 
 	@Override
 	public void takeMsgFrom(Personnage personnage) {
+
+		System.out.println("Boucle");
 		for (Message message : personnage.getMessagesReceived()) {
-			if (!(this.listeMessages.contains(message))) {
+			System.out.println("test existance");
+			if (message == null) {
+				continue;
+			}if (!(this.listeMessages.contains(message))) {
+				System.out.println("Pas contenu");
 				this.listeMessages.add(message);
 				this.valeur+= message.getPoids();
 			}

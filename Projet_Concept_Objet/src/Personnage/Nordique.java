@@ -1,38 +1,29 @@
 package Personnage;
 
-import java.util.List;
-
 import Carte.Carte;
+import Carte.SafeZone;
 import Message.Message;
 
 public class Nordique extends Personnage {
 	private String name;
 	private int pointAction = 100;
-	private Message[] messages;
+	private Message[] messages = new Message[4];
 	private String lastDirection;
 	private MaitreNordique maitre;
-	private int nbInstance = 0;
+	private static int nbInstance = 0;
 
-	public void incrPointAction() {
-		this.pointAction = 100;
-	}
-
-	@Override
-	public void move(Carte carte) throws InterruptedException {
-		super.move(carte);
-		if (carte.getCase(this.getPositionX(), this.getPositionY()).isASafeZone()) {
-			this.maitre.meet(this, carte);
-			this.incrPointAction();
-		}
-	}
-	public Nordique(String nom, Message[] messagenordique, MaitreNordique master) {
-		if (this.nbInstance < 4) {
+	public Nordique(String nom, MaitreNordique master) {
+		if (Nordique.nbInstance < 4) {
 			this.name = nom;
-			this.nbInstance++;
-			this.messages = messagenordique;
+			Nordique.nbInstance++;
+			this.messages[0] = new Message("Message Nordique 1", 1);
+			this.messages[1] = new Message("Message Nordique 2", 1);
+			this.messages[2] = new Message("Message Nordique 3", 1);
+			this.messages[3] = new Message("Message Nordique 4", 1);
 			this.maitre = master;
 			this.incrPointAction();
 			super.maitre = this.maitre;
+			this.setSafezone(SafeZone.MARKATH);
 		}
 	}
 }

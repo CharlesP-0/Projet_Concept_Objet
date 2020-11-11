@@ -1,38 +1,29 @@
 package Personnage;
 
-import java.util.List;
-
 import Carte.Carte;
+import Carte.SafeZone;
 import Message.Message;
 
 public class ElfeNoir extends Personnage {
 	private String name;
-	private List<Message> messages;
+	private Message[] messages = new Message[4];
 	private String lastDirection;
 	private static int nbInstance = 0;
 	private MaitreElfeNoir maitre;
 
-	public void incrPointAction() {
-		super.pointAction = 100;
-	}
-
-	public ElfeNoir(String nom, List<Message> messageClasse, MaitreElfeNoir master) {
-		if (this.nbInstance < 4) {
+	public ElfeNoir(String nom, MaitreElfeNoir master) {
+		if (ElfeNoir.nbInstance < 4) {
 			this.name = nom;
-			this.nbInstance++;
-			this.messages = messageClasse;
+			ElfeNoir.nbInstance++;
+			this.messages[0] = new Message("Message ElfeNoir 1", 1);
+			this.messages[1] = new Message("Message ElfeNoir 2", 1);
+			this.messages[2] = new Message("Message ElfeNoir 3", 1);
+			this.messages[3] = new Message("Message ElfeNoir 4", 1);
 			this.maitre = master;
 			this.incrPointAction();
 			super.maitre = this.maitre;
+			this.setSafezone(SafeZone.SOLITUDE);
 		}
 	}
 
-	@Override
-	public void move(Carte carte) throws InterruptedException {
-		super.move(carte);
-		if (carte.getCase(this.getPositionX(), this.getPositionY()).isASafeZone()) {
-			this.maitre.meet(this, carte);
-			this.incrPointAction();
-		}
-	}
 }

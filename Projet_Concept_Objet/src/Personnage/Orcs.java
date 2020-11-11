@@ -1,37 +1,28 @@
 package Personnage;
 
-import java.util.List;
-
 import Carte.Carte;
+import Carte.SafeZone;
 import Message.Message;
 
 public class Orcs extends Personnage {
 	private String name;
-	private Message[] messages;
+	private Message[] messages = new Message[4];
 	private String lastDirection;
-	private MaitreNordique maitre;
-	private int nbInstance= 0;
+	private MaitreOrc maitre;
+	private static int nbInstance= 0;
 
-	public void incrPointAction() {
-		this.pointAction = 100;
-	}
-
-	@Override
-	public void move(Carte carte) throws InterruptedException {
-		super.move(carte);
-		if (carte.getCase(this.getPositionX(), this.getPositionY()).isASafeZone()) {
-			this.maitre.meet(this, carte);
-			this.incrPointAction();
-		}
-	}
-	public Orcs(String nom, Message[] messagenordique, MaitreNordique master) {
-		if (this.nbInstance < 4) {
+	public Orcs(String nom, MaitreOrc master) {
+		if (Orcs.nbInstance < 4) {
 			this.name = nom;
-			this.nbInstance++;
-			this.messages = messagenordique;
+			Orcs.nbInstance++;
+			this.messages[0] = new Message("Message Orc 1", 1);
+			this.messages[1] = new Message("Message Orc 2", 1);
+			this.messages[2] = new Message("Message Orc 3", 1);
+			this.messages[3] = new Message("Message Orc 4", 1);
 			this.maitre = master;
 			this.incrPointAction();
 			super.maitre = this.maitre;
+			this.setSafezone(SafeZone.EPERVINE);
 		}
 	}
 }

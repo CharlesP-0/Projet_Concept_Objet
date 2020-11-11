@@ -2,7 +2,7 @@ package Message;
 
 public class Message {
 	private String content;
-	private int poids;
+	public int poids;
 	
 	public Message() {
 		setContent("Hello!");
